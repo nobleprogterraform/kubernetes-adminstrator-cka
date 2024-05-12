@@ -20,3 +20,19 @@
      selector:
        matchLabels:
         type: front-end
+
+
+Deployment
+	- Deployment is a Kubernetes object that comes higher in the hierarchy of replica set and pods.
+	- The deployment provides us with the capability to upgrade the underlying instances seamlessly using rolling updates, undo changes,
+		and pause, and resume changes as required
+	- A deployment definition file has apiVersion:apps/v1 kind:Deployment metadata (similar to others and have name and labels)
+		and a spec that has template (for pod definition), replicas and selector (for creating replica set and pods
+		as part of deployment definition itself)
+	- kubectl get deployment
+	- kubectl describe deployment dep-name
+	- kubectl describe deployments
+	- kubectl create deployment --image=httpd:1.4-alpine httpd-frontend --replicas=3 (replicas only in k8s versin 1.19+only)
+		--dry-run=client -o yaml > new-dep.yaml
+	- kubectl create -f new-dep.yaml
+	- To edit the deployment: kubectl edit deployment deployment-name, update the deployment and save the file will edit the deployment
