@@ -16,3 +16,37 @@ spec:
       containers:
       - name: monitoring-agent
         image: nginx
+
+
+DaemonSets
+	- DaemonSets are like ReplicaSets, as in it helps you deploy multiple instances of pods. But it runs one copy of your pod
+		on each node in your cluster. Whenever a new node is added to the cluster, a replica of the pod is automatically added to that node.
+		And when a node is removed the pod is automatically removed.
+	- So what are some use cases of DaemonSets? Say you would like to deploy a monitoring agent or log collector on each of your nodes in the cluster,
+		so you can monitor your cluster better. A DaemonSet is perfect for that as it can deploy your monitoring agent
+		in the form of a pod in all the nodes in your cluster.
+	- Earlier, while discussing the Kubernetes architecture, we learned that one of the worker node components
+		that is required on every node in the cluster is a kube-proxy. That is one good use case of DaemonSets.
+		The kube-proxy component can be deployed as a DaemonSet in the cluster
+	- Another use case is for networking.Networking solutions like weave-net requires an agent to be deployed on each node in the cluster
+	- Creating a DaemonSet is similar to the ReplicaSet creation process. It has nested pod specification under the template section
+		and selectors to link the DaemonSet to the pods. Here kind is DaemonSet. Ensure the labels in the selector matches the ones in the pod template.
+		kubectl get daemonsets, kubectl describe daemonset monitoring-agent
+	- Excercise to create a daemonset named elasticsearch on kube-system namespace. first create a deployment and save it to dameonset-def.yaml
+		file using kubectl create daemonset elasticsearch --image=registry.k8s.io/elasticsearch:1.20 -n=kube-system --dry-run=client -o yaml > 
+		daemonset-def.yaml
+		then edit the file with kind: DaemonSet and remove replicas and then kubectl create -f daemonset-def.yaml
+
+
+Editing Pods and deployments:
+	- Remember, you CANNOT edit specifications of an existing POD other than the below.
+		spec.containers[*].image
+		spec.initContainers[*].image
+		spec.activeDeadlineSeconds
+		spec.tolerations
+	- kubectl edit pod <pod name> and edit property and save file. K8s will give error and save file in tmp dir. 
+		you can delete the existing pod and create new one by running kubectl create -f /tmp/save-file.yaml
+	- 2nd way is to create yaml using existing pod, kubectl get pod pod-name -o yaml > my-new-pod.yaml 
+		Then edit the my-new-pod.yaml with new properties and save it. and then delete existing pod and create new using def file.
+	- When it comes to edit pod which is part of the deployment you can edit any property of the pod, because when we edit 
+		deployment, k8s will automatically delete existig pod and create new one.
