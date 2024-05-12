@@ -11,3 +11,6 @@ spec:
    env:
    - name: APP_COLOR
      value: pink
+
+
+  - To set an environment variable, use the ENV property. ENV is array, so every item under the ENV property is name and value
