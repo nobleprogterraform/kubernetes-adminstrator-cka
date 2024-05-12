@@ -1,1 +1,65 @@
 #kubectl exec -n=kube-system etcd-controlplane etcdctl version
+
+
+2.1 Cluster Architecture
+	- We start with a basic overview of the Kubernetes cluster architecture.
+		The purpose of Kubernetes is to host your applications in the form of containers in an automated fashion so that you can easily deploy
+		as many instances of your application
+		The Kubernetes cluster consists of a set of nodes, which may be physical or virtual, on premise or on cloud, that host applications in the form of containers. 
+		
+		The master node is responsible for managing the Kubernetes cluster, storing information regarding the different nodes,
+		planning which containers goes where, monitoring the nodes and containers on them, et cetera.The master node does all of these using a set
+		of components together known as the control playing components
+		
+		Etcd is a database that stores information in a key value format.We will look more into what etcd cluster actually is,
+		what data is stored in it, and how it stores the data
+		
+		A scheduler identifies the right node to place a container on based on the containers resource requirements,
+		the worker nodes capacity or any other policies or constraints, such as taints
+
+		The node controller takes care of nodes. They're responsible for onboarding new nodes to the cluster,
+		handling situations where nodes become unavailable or get destroyed, and the replication controller ensures
+		that the desired number of containers are running
+		
+		The Kube API server is the primary management component of Kubernetes. The Kube API server is responsible
+		for orchestrating all operations within the cluster. It exposes the Kubernetes API, which is used by external users
+		to perform management operations on the cluster
+		
+		So we need these software that can run containers and that's the container runtime engine,a popular one being Docker.
+		So we need Docker, or it's supported equivalent installed on all the nodes in the cluster, including the master nodes, if you wish
+		to host the controlling components as containers
+		
+		A kubelet is an agent that runs on each node in a cluster. It listens for instructions from the Kube API server
+		and deploys or destroys containers on the nodes as required
+		
+		Communication between worker nodes are enabled by another component that runs
+		on the worker node known as the Kube Proxy Service. The Kube Proxy Service ensures that the necessary rules are
+		in place on the worker nodes to allow the containers running on them to reach each other.
+		
+		So to summarize, we have master and worker nodes. On the master, we have the etcd cluster,
+		which stores information about the cluster. We have the cube scheduler that is responsible
+		for scheduling applications or containers on nodes. We have different controllers that take care
+		of different functions like the node controller, replication controller, et cetera.
+		We have the Kube API server that is responsible for orchestrating all operations within the cluster.
+		
+		On the worker node, we have the kubelet that listens for instructions from the Kube API server
+		and manages containers and the Kube Proxy that helps in enabling communication between services within the cluster.
+
+
+  2.3 ETCD for beginners
+  - ETCD is a distributed, reliable, key-value store that is simple, secure, and fast
+	- When you run ETCD, it starts a service that listens on port 2379 by default.
+		You can then attach any clients to the ETCD service to store and retrieve information.
+		A default client that comes with ETCD is the ETCDCTL client. 
+		The ETCDCTL client is a command line client for ETCD.
+		You can use it to store and retrieve key-value pairs
+
+  ETCD in Kubernetes
+    In this lecture, we will talk about etcd's role in Kubernetes.
+		The etcd data store stores information regarding the cluster such as the nodes, pods, configs, secrets, accounts, roles,
+		role bindings, and others.
+		Every information you see when you run the kube control get command is from the etcd server
+		Every change you make to your cluster such as adding additional nodes, deploying pods 
+		or replica sets are updated in the etcd server
+    If you set up your cluster using kubeadm,then kubeadm deploys the etcd server for you as a pod
+		in the kube system namespace (you can get this pod info using kubectl get pods -n kube-system)
