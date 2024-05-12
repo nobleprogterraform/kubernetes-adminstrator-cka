@@ -6,3 +6,67 @@
 # ps aux | grep kubelet
 
 # kubectl get ds -n kube-system (to see kube-proxy)
+
+
+Kube Controller manager
+	- As we discussed earlier the Kube controller manager, manages various controllers in Kubernetes.
+	- In the Kubernetes terms a controller is a process that continuously monitors the state of various components within the system
+		and works towards bringing the whole system to the desired functioning state.
+	- For example, the node controller is responsible for monitoring the status of the nodes and taking necessary actions to
+		keep the applications running
+		The note controller tests the status of the notes every five seconds.
+		That way the note controller can monitor the health of the notes. If it stops receiving heartbeat from a note
+		the note is marked as unreachable but it waits for 40 seconds before marking it unreachable.
+		After a note is marked unreachable it gives it five minutes to come back up.
+		If it doesn't, it removes the PODs assigned to that note and provisions them on the healthy ones if the PODs are part of a replica set. 
+		The next controller is the replication controller.It is responsible for monitoring the status 
+		of replica sets and ensuring that the desired number of PODs are available at all times within the set. 
+		If a POD dies, it creates another one.
+	- There are various types of controllers, They're all packaged into a single process known
+		as the Kubernetes Controller Manager.When you install the Kubernetes controller manager	the different controllers 
+		get installed as well
+	- If you set it up with the Kube admin tool, Kube admin deploys the Kube controller manager
+		as a POD in the Kube system namespace on the master node. (kubctl get pods -n kube-system)
+		You can see the options within the POD definition file located at etc/kubernetes/manifest folder.
+		cat /etc/kubernetes/manifest/kube-controller-manager.yaml
+	- In a non Kube admin setup, you can inspect the options by viewing the Kube Controller Managers service located 
+		at the services directory.
+		cat /etc/systemd/system/kube-controller-manager.service
+	- You can also see the running process and the effective options by listing the process on the master node 
+		and searching for Kube Controller Manager. ps -aux | grep kub-controller-manager 
+
+  Kubelet
+	- The kubelet in the Kubernetes worker node registers the node with a Kubernetes cluster.
+		When it receives instructions to load a container or a pod on the node,
+		it requests the container runtime engine, which may be Docker, to pull the required image and run an instance.
+		The kubelet then continues to monitor the state of the pod and containers in it and reports to the kube API server
+		on a timely basis.
+	- If you use the kubeadm tool to deploy your cluster,it does not automatically deploy the kubelet.
+		Now that's the difference from other components. You must always manually install the kubelet on your worker nodes.
+		Download the installer, extract it, and run it as a service.
+	- You can view the running kubelet process and the effective options by listing the process ps -aux | grep kubelet
+
+ Kube proxy
+	- Within a Kubernetes cluster, every pod can reach every other pod. This is accomplished by deploying
+		a pod networking solution to the cluster.
+	- A pod network is an internal virtual network that spans across all the nodes in the cluster to which all the pods connect to.
+		Through this network, they're able to communicate with each other.
+	- A better way for the web application to access the database is using a service.
+		So we create a service to expose the database application across the cluster. The web application can now access the database
+		using the name of the service, DB
+		The service also gets an IP address assigned to it. Whenever a pod tries to reach the service using its IP
+		or name, it forwards the traffic to the backend pod, in this case, the database
+	- But what is this service, and how does it get an IP? Does the service join the same pod network?
+		The service cannot join the pod network	because the service is not an actual thing.
+		it is not a container like pods,so it doesn't have any interfaces or an actively listening process.
+		It is a virtual component that only lives in the Kubernetes memory.
+		But then, we also said that the service should be accessible
+		across the cluster from any nodes. So how is that achieved? That's where kube-proxy comes in.
+	- Kube-proxy is a process that runs on each node in the Kubernetes cluster. Its job is to look for new services,
+		and every time a new service is created, it creates the appropriate rules on each node
+		to forward traffic to those services to the backend pods. One way it does this is using iptables rules.
+		In this case, it creates an iptables rule on each node in the cluster to forward traffic
+		heading to the IP of the service
+	- To install kube-proxy. Download the kube-proxy binary from the Kubernetes release page, extract it,
+		and run it as a service. The kubeadm tool deploys kube-proxy as pods on each node.
+		In fact, it is deployed as a DaemonSet, so a single pod is always deployed on each node in the cluster
