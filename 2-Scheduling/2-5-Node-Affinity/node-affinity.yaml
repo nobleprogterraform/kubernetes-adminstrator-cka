@@ -19,3 +19,28 @@ spec:
             values: 
             - Small
             - Medium
+
+
+Node Affinity
+	- We cannot provide advanced expressions like "or" or not with node selectors. The node affinity feature provides us with advanced capabilities
+		to limit pod placement on specific nodes.
+	- spec:
+		affinity:
+			nodeAffinity:
+				requiredDuringSchedulingIgnoredDuringExecution:
+					nodeSelectorTerms:
+						- matchExpressions:
+							- key: size
+							  Operator: In (or NotIn, Exists with no values, 
+							  values:
+								- Large
+								- Medium
+	- But what if node affinity could not match a node with a given expression? In this case, what if there are no nodes
+		with the label called size? Say we had the labels and the pods are scheduled. What if someone changes the label on the node
+		at a future point in time. All of this is answered by the long sentence like property under node affinity
+	- There are currently two types of node affinity available,
+		requiredDuringSchedulingIgnoredDuringExecution and
+		preferredDuringSchedulingIgnoredDuringExecution
+	- For required type if a matching node is not found, pod is not specheduled 
+	- For preferred type if a matching node is not found, pod is scheduled on any node availabel
+	- Ignored during execution means if a label is changed on a node after pod has been scheduled then there will be not changes made on pod
