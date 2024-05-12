@@ -6,3 +6,34 @@ metadata:
   name: dev
 
 #kubectl create -f 1-4-1-pods.yaml --namespace=dev
+
+
+Namespace
+	- So far we have created objects such as pods, deployments, and services in our cluster.
+		we have been doing all this within a name space.This name space is known as the default name space
+		and it is created automatically by Kubernetes when the cluster is first set up.
+	- Kubernetes creates a set of pods and services for its internal purpose, such as those required by the networking solution,
+		the DNS service, etcetera. To isolate these from the user and to prevent you from accidentally deleting 
+		or modifying these services, Kubernetes creates them under another name space created at cluster startup named kube-system
+	- A third name space created by Kubernetes automatically is called kube-public. This is where resources
+		that should be made available to all users are create
+	- One example of using a namespace is if you wanted to use the same cluster for both dev and production environment,
+		but at the same time, isolate the resources between them, you can create a different name space for each of them.
+		That way, while working in the dev environment,you don't accidentally modify resources in production
+	- You can also assign quota of resources to each of these name spaces. That way, each name space is guaranteed a certain amount
+		and does not use more than its allowed limit
+	- the resources within a name space can refer to each other simply by their names. To reach a service in another name space,
+		you must append the name of the namespace to the name of the service.
+		For example, for the web pod in the default name space to connect to the database in the dev environment or namespace,
+		use the servicename.namespace.svc.cluster.local format
+		dbservice.dev.svc.cluster.local When a service is created a DNS entry is added automatically in this format
+	- cluster.local is the default domain name of the Kubernetes cluster and SVC is the sub domain for service
+	- To list pods in another name space kubectl get pods --namespace=kube-system
+	- kubectl create -f pod-def.yaml --namespace=dev or put namespace: dev in pod-def.yaml under metadata section 
+	- To create a new namespace create definition file with apiVersion:v1, kind:Namespace, metadata: Name:dev
+		or by running command kubectl create namespace dev 
+	- To switch namespace to dev, kubectl config set-context $(kubectl config current-context) --namespace=dev
+	- To view pods in all namespaces, kubectl get pods --all-namespaces
+	- To limit resources in a namespace, create a resource quota using yaml definition file
+		apiVersion: v1, kind: ResourceQuota, spec: hard: pods: "10" requests.cpu: "4" requests.memory:5Gi limits.cpu:"10"
+		limits.memory: 10Gi
