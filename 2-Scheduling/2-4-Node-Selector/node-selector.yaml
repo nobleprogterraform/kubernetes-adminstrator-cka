@@ -11,3 +11,13 @@ spec:
    image: nginx
  nodeSelector:
   size: Large
+
+
+  Node selector
+	- we can set a limitation on the pods so that they only run on particular nodes (for example larger nodes with more compute power or resources)
+	- There are 2 ways of doing it, first is node selector which is simple and easy and second is node affinity
+	- For node selector we update pod definition file by adding nodeSelector property with key-value pairs of node labels
+		The scheduler uses these labels to match and identify the right node to place the pods on.
+	- To label a node: kubectl label nodes node-name size=Large
+	- If we would like to say something like place the pod on a large or medium node, or any nodes that are not small.
+		You cannot achieve this using node selectors. For this, node affinity and anti-affinity
