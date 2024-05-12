@@ -20,3 +20,28 @@
      selector:
        matchLabels:
         type: front-end
+
+
+Replica sets
+	- Controllers are the brain behind Kubernetes. They are the processes that monitor Kubernetes objects and respond accordingly
+	- The Replication Controller helps us run multiple instances of a single pod in the Kubernetes cluster,
+		thus providing high availability.
+		Another reason we need Replication Controller is to create multiple pods to share the load across them.
+	- It's important to note that there are two similar terms. Replication Controller and Replica Set.
+		Both have the same purpose, but they're not the same. Replication Controller is the older technology
+		that is being replaced by Replica Set. Replica Set is the new recommended way to set up replication
+	- version in replication controller is v1 vs apps/v1 in replica set 
+	- kind in replication controller is ReplicationController vs ReplicaSet in replica set
+	- under spec, template is same for both but selector is optional in replication controller but mandatory in replica set
+	- The selector section helps the Replica Set identify what pods fall under it.
+		selector is used because Replica Set can also manage pods that were not created as part of the Replica Set creation.
+	- under template we need to write the whole pod definition starting metadat section so that replication controller and 
+		replica set can create a new instance if none of pods are availabel to scale up
+	- final secion is replicas: 3 in yaml to define minimum number of instances 
+	- to create replication controller kubectl create -f RC-definition.yaml 
+	- to view the list kubectle get replicationcontroller
+	- How to update replicas from 3 to 6, mulitple ways, one way is to update yaml file and run kubectl replate -f rc-def.yaml
+	- second way, kubectl scale --replicas=6 -f rc-def.yaml (not udpate file automatically to 6)
+	- third way, kubectl scale --replicas=6 replicaset myapp-replicaset
+	- kubectl get replicaset, kubectl get replicaset -o wide, kubectl describe replicaset rc-name, kubectl describe replicasets
+	- kubectl edit replicaset my-replica-set (then update and save the file)
