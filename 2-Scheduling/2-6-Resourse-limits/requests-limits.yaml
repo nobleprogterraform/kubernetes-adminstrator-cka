@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+  labels:
+    name: simple-webapp-color
+spec:
+ containers:
+ - name: nginx
+   image: nginx
+   ports:
+    - containerPort:  8080
+   resources:
+     requests:
+      memory: "50Mi"
+      cpu: "0.5"
+     limits:
+       memory: "50Mi"
+       cpu: "0.5"

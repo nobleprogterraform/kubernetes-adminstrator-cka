@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-server
+  labels:
+    app: blue
+  
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+- name: 
+
+
+#kubectl run nginx --image=nginnnx
+
+/*
+What is the image used to create the new pods? 
+How many containers are part of the pod webapp?,
+What is the state of the container agentx in the pod webapp?
+			kubectl describe pod newpods
+Which nodes are these pods placed on?
+			kubectl get pods -o wide
+Delete the webapp Pod.
+      kubectl delete pod nginx
+
+*/

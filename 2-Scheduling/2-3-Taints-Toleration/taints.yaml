@@ -1,0 +1,16 @@
+# kubectl cordon node02
+#kubectl taint nodes node1 app=blue:NoSchedule
+
+apiVersion: v1
+kind: Pod
+metadata:
+ name: myapp-pod
+spec:
+ containers:
+ - name: nginx-container
+   image: nginx
+ tolerations:
+ - key: "app"
+   operator: "Equal"
+   value: "red"
+   effect: "NoSchedule"

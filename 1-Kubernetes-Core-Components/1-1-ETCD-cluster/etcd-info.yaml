@@ -1,0 +1,1 @@
+#kubectl exec -n=kube-system etcd-controlplane etcdctl version

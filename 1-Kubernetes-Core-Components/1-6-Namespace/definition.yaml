@@ -1,0 +1,8 @@
+# kubectl create namespace dev
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+
+#kubectl create -f 1-4-1-pods.yaml --namespace=dev
