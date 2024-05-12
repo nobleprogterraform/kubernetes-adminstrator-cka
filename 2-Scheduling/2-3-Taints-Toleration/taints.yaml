@@ -14,3 +14,30 @@ spec:
    operator: "Equal"
    value: "red"
    effect: "NoSchedule"
+
+
+ Taints and Tolerations
+	- we will discuss about the pod-to-node relationship and how you can restrict what pods are placed on what nodes
+	- lets assume that we have dedicated resources on node one for a particular use case or application.
+		So we would like only those pods that belong to this application to be placed on that node.
+		First, we prevent all pods from being placed on the node by placing a taint on the node.
+		Now no pods can be place on this node which solves half of the problem, other half is to allow certain pods to be scheduled on this node
+	- To enable certain pods to be placed on this node. For this we must specify which pods are tolerant to this particular taint
+		remember, taints are set on nodes and tolerations are set on pods
+	- kubectl taint nodes command to taint a node: kubectl taint nodes node-name app=blue:taint-effect(NoSchedule|PreferNoSchedule|NoExecute)
+	- To remove taint from a node: kubectl taint nodes controlplan app=blue:NoSchedule-
+	- The taint effect defines what would happen to the pods if they do not tolerate the taint. There are three taint effects,
+		no schedule, which means the pods will not be scheduled on the node, which is what we have been discussing.
+		Prefer no schedule, which means the system will try to avoid placing a pod on the node, but that is not guaranteed.
+		And third is no execute, which means that new pods will not be scheduled on the node and existing pods on the node, if any, will be evicted
+		if they do not tolerate the taint. These pods may have been scheduled on the node before the taint was applied to the node.
+	- To add a toleration to a pod, first pull up the pod definition file, under spec section add tolerations: list of key,operator,value and effect
+		where key="app", operator="Equal", value="blue" and effect="NoSchedule"
+	- Remember taints and tolerations are only meant to restrict nodes from accepting certain pods.
+		it does not guarantee that a pod will always be placed on a certain node.
+		So remember, taints and tolerations does not tell the pod to go to a particular node.
+		Instead, it tells the node to only accept pods with certain tolerations. If your requirement is to restrict a pod to certain nodes,
+		it is a achieved through another concept called as node affinity
+	- scheduler does not schedule any pods on the master node. Because when the Kubernetes cluster is first set up, a taint is set on the 
+		master node automatically that prevents any pods from being scheduled on this node.
+		To see the tains on master node: kubectl describe node kubemaster | grep Taints
