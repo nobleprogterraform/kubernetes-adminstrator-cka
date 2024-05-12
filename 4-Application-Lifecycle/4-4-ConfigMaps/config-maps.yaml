@@ -9,3 +9,11 @@
 
   #  kubectl describe configmaps
   #  kubectl get configmaps
+
+  - We can take variable information out of the pod definition file and manage it centrally using configuration maps
+		Config maps are used to pass configuration data in the form of key value pairs in Kubernetes
+		When a pod is created, inject the config map into the pod so the key value pairs are available as environment variables
+	- The imperative way without creating definition file: kubectl create configmap appp-config --from-literal=APP_COLOR=blue \
+		--from-literal=APP_MOD=prod
+		However, this will get complicated when you have too many configuration items
+	- declarative approach: create definition file mysql-config.yaml and run kubectl create -f mysql-config.yaml
