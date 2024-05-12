@@ -10,3 +10,22 @@ spec:
  selector:
    app: myapp
    type: backend
+
+
+Service: ClusterIP
+	- You may have a number of pods running a front end web servers, another set of pods running a backend server,
+		a set of pods running a key value store like Redis and another set of pods may be running a persistent database like MySQL.
+		The web front end server needs to communicate to the backend servers, and the backend servers need to communicate
+		to the database as well as the Redis services, et cetera
+	- So what is the right way to establish connectivity between these services or tiers of my application?
+		The pods all have an IP address assigned to them, but these IPs, as we know, are not static.
+		These pods can go down anytime and new pods are created all the time and so you cannot rely on these IP addresses
+		for internal communication between the application
+	- A Kubernetes service can help us group the pods together and provide a single interface to access the pods
+		in a group
+	- This enables us to easily and effectively deploy a microservices based application on Kubernetes cluster.
+		Each layer can now scale or move as required without impacting communication
+		between the various services. Each service gets an IP and name assigned to it inside the cluster, and that 
+		is the name that should be used by other pods to access the service.
+		This type of service is known as ClusterIP
+	- apiVersion:v1, kind:Service, spec: type: ClusterIP(default) ports: -targetPort:80 port:80
