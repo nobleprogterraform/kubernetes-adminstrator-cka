@@ -11,3 +11,27 @@ spec:
  selector:
    app: myapp
    type: front-end
+
+
+Services: Nodeport
+	- The Kubernetes Service is an object, just like Pods, ReplicaSet, or Deployments. Kubernetes Services enable communication
+		between various components within and outside of the application.
+		Kubernetes Services helps us connect applications together with other applications or users
+	- NodePort service is the service that listens to a port on the node and forward request to the Pods
+	- There are three ports involved.The port on the Pod where the actual web container is running (eg 80)
+		and it is referred to as the target port. because that is where the service forwards their request to
+		The second port is the port on the service itself. It is simply referred to as the port.
+		The service is, in fact, like a virtual server inside the node. Inside the cluster it has its own IP address,
+		and that IP address is called the ClusterIP of the service
+		And finally, we have the port on the node itself which we use to access the web server externally, and that is as the node port
+		node ports can only be in a valid range which by default is from 30,000 to 32,767	
+	- The service definition file has apiVersion: v1 kind: Service metadata and spec has type:NodePort and ports list.
+		ports list has target:80 (optional), port:80 (mandatory) and nodePort:30008(optional)
+		selector is used to connect service to pods. If multiple pods fall in the selector lables than all pods are load balanced(random)
+		for incoming requests
+	- When pods are distributed across multiple nodes, in this case k8s creates a service which spans across all the nodes in cluster
+		and maps the target port(eg 80) to same node port (eg 30008) on all nodes in cluster. 
+		This way you can access your application using the IP of any node in the cluster and using the same port number
+		which in this case is 30,008
+	- kubectl create -f service- definition.yaml
+	- kubectl get services 
