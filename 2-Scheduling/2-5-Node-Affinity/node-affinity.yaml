@@ -44,3 +44,10 @@ Node Affinity
 	- For required type if a matching node is not found, pod is not specheduled 
 	- For preferred type if a matching node is not found, pod is scheduled on any node availabel
 	- Ignored during execution means if a label is changed on a node after pod has been scheduled then there will be not changes made on pod
+
+
+ Taints & Tolerations with Node Affinity
+	- If we have 3 nodes and 3 pods that we want to have 1:1 mapping between pods and nodes (without impacting other nodes and pods in same 
+		cluster) then in such usecase we can combine both Taints-Tolerations with NodeAffinity. 
+	- Taints-Tolerations will not allow other pods in cluster to be scheduled on nodes and NodeAffinity will force our pods to be scheduled 
+		in our specified 3 nodes only.
