@@ -1,2 +1,26 @@
 # kubectl get pods -n kube-system
 # sudo cat etc/kubernetes/manifest/kube-apiserver.yaml
+
+
+Kube-API server
+	- Earlier, we discussed that the kube-apiserver is the primary management component in Kubernetes. When you run a kubectl command,
+		the kubectl utility is in fact reaching to the kube-apiserver
+	- Let's look at an example of creating a pod.When you do that, as before,the request is authenticated first and then validated.
+		In this case, the API server creates a pod object without assigning it to a node. Updates the information in the etcd server,
+		updates the user that the pod has been created. The scheduler continuously monitors the API server 
+		and realizes that there is a new pod with no node assigned. The scheduler identifies the right node to place the new pod on
+		and communicates that back to the kube-apiserver.
+		The API server then updates the information in the etcd cluster.
+		The API server then passes that information to the kubelet in the appropriate worker node.
+		The kubelet then creates the pod on the node and instructs the container runtime engine to deploy the application image.
+		Once done, the kubelet updates the status back to the API server and the API server then updates the data back in the etcd cluster.
+		A similar pattern is followed every time a change is requested
+	-   The kube-apiserver is run with a lot of parameters, There are different modes of authentication, 
+		authorization, encryption and security. And that's why you have so many options.
+		A lot of them are certificates that are used to secure the connectivity between different components
+	- So how do you view the kube-apiserver options in an existing cluster?
+		If you set it up with a kubeadmin tool,
+		the kubeadmin deploys the kubeadmin-apiserver as a pod in the kube-system namespace on the master node(kubectl get pods -n kube-system).
+		You can see the options within the pod definition file, located at etc/kubernetes/manifest folder.
+		You can also see the running process and the effective options by listing the process 
+		on the master node and searching for kube-apiserver. By running ps -aux | grep kube-apiserver
