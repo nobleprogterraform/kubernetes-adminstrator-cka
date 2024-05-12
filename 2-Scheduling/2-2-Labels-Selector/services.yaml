@@ -11,3 +11,21 @@ spec:
  selector:
    app: myapp
    type: front-end
+
+Labels and Selectors:
+   - Labels and selectors are a standard method to group things together. Say, you have a set of different species
+		a user wants to be able to filter them based on different criteria, eg class, kind, color etc
+	- Labels are properties attached to each item so you add properties to each item eg, for their class, kind, and color.
+		Selectors help you filter these items
+	- We see labels in selectors used everywhere, such as the keywords you tag to YouTube videos
+		or blogs that help users filter and find the right content
+	- So, how are labels and selectors used in Kubernetes? We have created a lot of different types of objects in Kubernetes,
+		pods, services, replica sets, deployments, et cetera. For Kubernetes, all of these are different objects.
+		Over time, you may end up having hundreds or thousands of these objects in your cluster. Then you will need a way to filter
+		and view different objects by different categories, such as to group objects by their type or view objects by application
+		or by their functionality.
+	- To select pod with lables: kubectl get pod --selector tier=frontend,env=prod,bu=finance	
+	- To select all objects for given label: kubectl get all --selector env=prod --no-headers | wc -l
+	- While labels and selectors are used to group and select objects, annotations are used to record other details
+		for informatory purpose. For example, tool details like name, version, build information, et cetera,or contact details, 
+		phone numbers, email IDs, et cetera that may be used for some kind of integration purpose
