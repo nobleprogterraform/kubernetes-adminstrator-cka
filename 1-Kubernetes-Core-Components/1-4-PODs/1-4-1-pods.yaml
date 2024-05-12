@@ -25,3 +25,44 @@ Delete the webapp Pod.
       kubectl delete pod nginx
 
 */
+
+PODs
+	- with Kubernetes, our ultimate aim is to deploy our application in the form of containers
+		on a set of machines that are configured as worker nodes in a cluster. However, Kubernetes does not deploy containers directly
+		on the worker nodes. The containers are encapsulated into a Kubernetes object known as pods.
+		A pod is a single instance of an application. A pod is the smallest object that you can create in Kubernetes.
+	- pods usually have a one-to-one relationship with the containers, but are we restricted to having a single container
+		in a single pod? No, a single pod can have multiple containers except for the fact that they're usually not multiple containers
+		of the same kind. It can be a helper container for main container 
+	-  how to deploy pods.Earlier we learned about the kubectl run command. What this command really does is
+		it deploys a Docker container by creating a pod, so it first creates a pod automatically
+		and deploys an instance of the NGINX Docker image. kubectl run nginx --image nginx
+		The kubectl get pods command helps us see the list of pods. kubectl get pods
+		kubectl get pods -o wide 
+		kubectl describe pods
+		kubectl describe pod pod-name
+		kubectl delete pod webapp
+		kubectl get nodes (to see all nodes)
+		kubectl get node node01 --show-labels
+		kubectl run redis --image=redis --dry-run=client -o yaml
+		kubectl run redis --image=redis --dry-run=client -o yaml > redis.yaml
+		kubectl create -f redis.yaml
+		kubectl apply -f redis.yaml (to rerun yaml after editing yaml file)
+		kubectl edit 
+
+  YAML in kubernetes
+	- Kubernetes uses YAML files as inputs for the creation of objects such as pods, replicas, deployments, services, et cetera.
+	- 4 top level fields in every yaml are the API version, kind, metadata, and spec.
+	- apiVersion: This is the version of the Kubernetes API (possible values v1, apps/V1beta,extensions/V1beta)
+	- kind: type of the object we are trying to create (pod,replica-set,deployment,service etc)
+	- metadata: The metadata is data about the object like its name, labels, et cetera. Its disctionary 
+	- spec: the specification section which is written as spec. Depending on the object we are going to create,
+		this is where we would provide additional information to Kubernetes pertaining to that object.
+		This is going to be different for different objects so it's important to understand or refer to
+		the documentation section to get the right format for each. for pods its single item List with 
+		containers:
+			- name: NGINX-container
+			  image: nginx
+	- To crate the pods execute cubectl create -f pod-definition.yaml 
+	- To get pods execute kubectl get pods
+	- to see details of a pod kubectl describe pod myapp-pod
