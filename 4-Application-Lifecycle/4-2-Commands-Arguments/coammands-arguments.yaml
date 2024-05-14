@@ -22,30 +22,30 @@ spec:
 
 
 Commands And Aruguments in POD definition
-	- Let's first refresh our memory on commands on containers and Docker. We will then translate this into pods.
-	-  we will look at commands, arguments, and entry points in Docker
-	- docker run ubuntu (to run a container image with ubuntu operating system)
-	- docker ps (to see all running processes inside docker)
-	- docker ps -a (to all processed including stopped one)
-	- Unlike virtual machines, containers are not meant to host an operating system. Containers are meant to run a specific task
-		or process, such as to host an instance of a web server or application server or a database, or simply to carry out some computation 
-		or analysis. Once the task is complete, the container exits. A container only lives as long as the process inside it is alive
-	 	If the web service inside the container is stopped or crashes, the container exits
-	- So who defines what process is run within the container? If you look at the Docker file for popular Docker images, like NGINX, you will 
-		see an instruction called CMD, which stands for command, that defines the program. CMD["ngnix"]
-	- So how do you specify a different command to start the container? One option is to append a command to the Docker run command
-		eg. docker run ubuntu sleep 5
-	- If you want a command to run permanently then you create your own image from the base Ubuntu image
-		eg. FROM ubuntu
-			CMD sleep 5 (or CMD ["sleep","5"])
-		docker build -t ubuntu-sleeper
-		docker run ubuntu-sleeper
-	- Now if you want to pass seconds as argument, then you use ENTRYPOINT. The entry point instruction is like the command instruction,
-		the command line parameters will get appended. docker run ubuntu-sleeper 10
-		FROM ubuntu
-		ENTRYPOINT ["sleep"]
-	- Now if you want to have default value of seconds then you use both ENTRYPOINT and CMD. docker run ubuntu-sleeper 
-		FROM ubuntu
-		ENTRYPOINT ["sleep"]
-		CMD ["5"]
-	- You can override entrypoint by using command docker run --entrypoint sleep-2.0 ubuntu-sleeper 20
+- Let's first refresh our memory on commands on containers and Docker. We will then translate this into pods.
+-  we will look at commands, arguments, and entry points in Docker
+- docker run ubuntu (to run a container image with ubuntu operating system)
+- docker ps (to see all running processes inside docker)
+- docker ps -a (to all processed including stopped one)
+- Unlike virtual machines, containers are not meant to host an operating system. Containers are meant to run a specific task
+	or process, such as to host an instance of a web server or application server or a database, or simply to carry out some computation 
+	or analysis. Once the task is complete, the container exits. A container only lives as long as the process inside it is alive
+	If the web service inside the container is stopped or crashes, the container exits
+- So who defines what process is run within the container? If you look at the Docker file for popular Docker images, like NGINX, you will 
+	see an instruction called CMD, which stands for command, that defines the program. CMD["ngnix"]
+- So how do you specify a different command to start the container? One option is to append a command to the Docker run command
+	eg. docker run ubuntu sleep 5
+- If you want a command to run permanently then you create your own image from the base Ubuntu image
+	eg. FROM ubuntu
+		CMD sleep 5 (or CMD ["sleep","5"])
+	docker build -t ubuntu-sleeper
+	docker run ubuntu-sleeper
+- Now if you want to pass seconds as argument, then you use ENTRYPOINT. The entry point instruction is like the command instruction,
+	the command line parameters will get appended. docker run ubuntu-sleeper 10
+	FROM ubuntu
+	ENTRYPOINT ["sleep"]
+- Now if you want to have default value of seconds then you use both ENTRYPOINT and CMD. docker run ubuntu-sleeper 
+	FROM ubuntu
+	ENTRYPOINT ["sleep"]
+	CMD ["5"]
+- You can override entrypoint by using command docker run --entrypoint sleep-2.0 ubuntu-sleeper 20
