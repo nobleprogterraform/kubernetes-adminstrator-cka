@@ -32,30 +32,30 @@
 
 
 Rolling updates and Rollbacks
-	- When you first create a deployment, it triggers a rollout. A new rollout creates a new deployment revision. In the future 
-		when the application is upgraded,a new rollout is triggered, and a new deployment revision is created.
-	- This helps us keep track of the changes made to our deployment and enables us to roll back to a previous version of deployment 
-		if necessary
-	- There are two types of deployment strategies, first one is to destroy all of these and then create newer versions
-		of application instances. The problem with this, is that during the period after the older versions are down and before any newer 
-		version is up, the application is down and inaccessible to users. This strategy is known as the recreate strategy, not default used by k8s.
-	- rolling update is the default deployment strategy. In this strategy k8s take down the older version and bring up a newer version one by one.
-		This way, the application never goes down
-	- When you execute kubectl create -f command (after updating deployment definition file), kubernetes creates a rollout.
-	- You could use the kubectl set image command to update the image of your application but that will not make changes to your definition file.
-	- rolling update strategies can also be seen when you view the deployments in detail. Run the kubectl describe deployment command
-		to see the detailed information regarding the deployments. You will notice when the recreate strategy was used,
-		the events indicate that the old replica set was scaled down to zero first, and then the new replica set scaled up to five.
-		However, when the rolling update strategy was used, the old replica set was scaled down one at a time,simultaneously scaling 
-		up the new replica set one at a time
-	- Let's look at how a deployment performs an upgrade under the hood. When a new deployment is created, say, to deploy five replicas,
-		it first creates a replica set automatically, which in turn creates the number of pods required to meet the number of replicas.
-		When you upgrade your application, as we saw in the previous slide, the Kubernetes deployment object creates a new replica set
-		under the hood and starts deploying the containers there, at the same time, taking down the pods in the old replica set
-	- Summary of commands: 
-		kubectl create -f deployment-definition.yaml (to create deployment and it creates replica sets automatically)
-		kubectl get deployments (to see the deployments)
-		kubectl apply -f deployment-definition.yaml (to update the application with new values, kubectl set image deployment/my-dep --image=nginx2)
-		kubctl rollout status deployment/my-deployment ( to check the status of the rollout for a given deployment)
-		kubctl rollout history deployment/my-deployment (to check history of rollouts for a give deployment
-		kubctl rollout undo deployment/my-deployment (to rollback to previous version of rollout)
+- When you first create a deployment, it triggers a rollout. A new rollout creates a new deployment revision. In the future 
+	when the application is upgraded,a new rollout is triggered, and a new deployment revision is created.
+- This helps us keep track of the changes made to our deployment and enables us to roll back to a previous version of deployment 
+	if necessary
+- There are two types of deployment strategies, first one is to destroy all of these and then create newer versions
+	of application instances. The problem with this, is that during the period after the older versions are down and before any newer 
+	version is up, the application is down and inaccessible to users. This strategy is known as the recreate strategy, not default used by k8s.
+- rolling update is the default deployment strategy. In this strategy k8s take down the older version and bring up a newer version one by one.
+	This way, the application never goes down
+- When you execute kubectl create -f command (after updating deployment definition file), kubernetes creates a rollout.
+- You could use the kubectl set image command to update the image of your application but that will not make changes to your definition file.
+- rolling update strategies can also be seen when you view the deployments in detail. Run the kubectl describe deployment command
+	to see the detailed information regarding the deployments. You will notice when the recreate strategy was used,
+	the events indicate that the old replica set was scaled down to zero first, and then the new replica set scaled up to five.
+	However, when the rolling update strategy was used, the old replica set was scaled down one at a time,simultaneously scaling 
+	up the new replica set one at a time
+- Let's look at how a deployment performs an upgrade under the hood. When a new deployment is created, say, to deploy five replicas,
+	it first creates a replica set automatically, which in turn creates the number of pods required to meet the number of replicas.
+	When you upgrade your application, as we saw in the previous slide, the Kubernetes deployment object creates a new replica set
+	under the hood and starts deploying the containers there, at the same time, taking down the pods in the old replica set
+- Summary of commands: 
+	kubectl create -f deployment-definition.yaml (to create deployment and it creates replica sets automatically)
+	kubectl get deployments (to see the deployments)
+	kubectl apply -f deployment-definition.yaml (to update the application with new values, kubectl set image deployment/my-dep --image=nginx2)
+	kubctl rollout status deployment/my-deployment ( to check the status of the rollout for a given deployment)
+	kubctl rollout history deployment/my-deployment (to check history of rollouts for a give deployment
+	kubctl rollout undo deployment/my-deployment (to rollback to previous version of rollout)
