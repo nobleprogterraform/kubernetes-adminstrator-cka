@@ -32,10 +32,6 @@ DaemonSets
 	- Creating a DaemonSet is similar to the ReplicaSet creation process. It has nested pod specification under the template section
 		and selectors to link the DaemonSet to the pods. Here kind is DaemonSet. Ensure the labels in the selector matches the ones in the pod template.
 		kubectl get daemonsets, kubectl describe daemonset monitoring-agent
-	- Excercise to create a daemonset named elasticsearch on kube-system namespace. first create a deployment and save it to dameonset-def.yaml
-		file using kubectl create daemonset elasticsearch --image=registry.k8s.io/elasticsearch:1.20 -n=kube-system --dry-run=client -o yaml > 
-		daemonset-def.yaml
-		then edit the file with kind: DaemonSet and remove replicas and then kubectl create -f daemonset-def.yaml
 
 
 Editing Pods and deployments:
