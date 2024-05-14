@@ -5,37 +5,37 @@
 
 
 Static PODs
-	- The kubelet relies on the kube-apiserver for instructions on what Pods to load on its Node, which was based on a decision made by 
-		the kube-scheduler, which was stored in the ETCD data store. What if there was no kube-apiserver and kube-scheduler
-		and no controllers and no ETCD cluster? What if there was no master at all? What if there were no other Nodes?
-	- Well, the kubelet can manage a Node independently. The one thing that the kubelet knows to do is create Pods,
-		but we don't have an API server here to provide Pod details using definition files.
-	- You can configure the kubelet to read the Pod definition files from a directory on the server designated to store information about Pod
-	- Place the Pod definition files in this directory. The kubelet periodically checks this directory for files,reads these files, 
-		and creates Pods on the host.Not only does it create the Pod,it can ensure that the Pod stays alive.If the application crashes,
-		the kubelet attempts to restart it. If you make a change to any of the file within this directory, the kubelet recreates the Pod
-		for those changes to take effect. If you remove a file from this directory, the Pod is deleted automatically.
-	- So these Pods that are created by the kubelet on its own without the intervention from the API server
-		or rest of the Kubernetes cluster components are known as static Pods. you can only create Pods this way.
-		You cannot create replica sets or deployments or services by placing a definition file in the designated directory.
-		They're all concepts, part of the whole Kubernetes architecture that requires other cluster plane components
-	- Location of the directory is either passed in to the kubelet as an option while running the service. The option is named pod-manifest-path,
-		or Instead of specifying the option directly in the kubelet.service file, you could provide a path to another config file (kube-config.yaml)
-		using the config option and define the directory path as staticPodPath in that file
-	- Once pod are created we can not see them by using kubectl as there is no apiserver, we can see pods by docker ps command
-	- The kubelet can create both kinds of Pods, the static Pods and the ones from the API server at the same time.
-	- When the kubelet creates a static Pod, if it is a part of a cluster, it also creates a mirror object in the kube-apiserver.
-		What you see from the kube-apiserver is just a read-only mirror of the Pod. You can view details about the Pod,
-		but you cannot edit or delete it like the usual Pods.
-	- So then why would you want to use static Pods? Since static Pods are not dependent on the Kubernetes control plane, you can use static Pods
-		to deploy the control plane components itself as Pods on a Node. Well, start by installing kubelet on all the master Nodes,
-		then create Pod definition files that uses docker images of the various control plane components
-		such as the API server, controller, ETCD, et cetera. Place the definition files in the designated manifest folder,
-		and the kubelet takes care of deploying the control plane components themselves as Pods on the cluster.
-		This way, you don't have to download the binaries,
-		configure services, or worry about the services crashing. If any of these services were to crash, since it's a static Pod,
-		it'll automatically be restarted by the kubelet.
-	- That's how the kube admin tool sets up a Kubernetes cluster,which is why when you list the Pods
-		in the kube-system namespace you see the control plane components as Pods
-	- difference between static Pods and DaemonSets, DaemonSet is handled by a DaemonSet controller through the kube-apiserver.
-		Both static Pods and Pods created by DaemonSets are ignored by the kube-scheduler.
+- The kubelet relies on the kube-apiserver for instructions on what Pods to load on its Node, which was based on a decision made by 
+	the kube-scheduler, which was stored in the ETCD data store. What if there was no kube-apiserver and kube-scheduler
+	and no controllers and no ETCD cluster? What if there was no master at all? What if there were no other Nodes?
+- Well, the kubelet can manage a Node independently. The one thing that the kubelet knows to do is create Pods,
+	but we don't have an API server here to provide Pod details using definition files.
+- You can configure the kubelet to read the Pod definition files from a directory on the server designated to store information about Pod
+- Place the Pod definition files in this directory. The kubelet periodically checks this directory for files,reads these files, 
+	and creates Pods on the host.Not only does it create the Pod,it can ensure that the Pod stays alive.If the application crashes,
+	the kubelet attempts to restart it. If you make a change to any of the file within this directory, the kubelet recreates the Pod
+	for those changes to take effect. If you remove a file from this directory, the Pod is deleted automatically.
+- So these Pods that are created by the kubelet on its own without the intervention from the API server
+	or rest of the Kubernetes cluster components are known as static Pods. you can only create Pods this way.
+	You cannot create replica sets or deployments or services by placing a definition file in the designated directory.
+	They're all concepts, part of the whole Kubernetes architecture that requires other cluster plane components
+- Location of the directory is either passed in to the kubelet as an option while running the service. The option is named pod-manifest-path,
+	or Instead of specifying the option directly in the kubelet.service file, you could provide a path to another config file (kube-config.yaml)
+	using the config option and define the directory path as staticPodPath in that file
+- Once pod are created we can not see them by using kubectl as there is no apiserver, we can see pods by docker ps command
+- The kubelet can create both kinds of Pods, the static Pods and the ones from the API server at the same time.
+- When the kubelet creates a static Pod, if it is a part of a cluster, it also creates a mirror object in the kube-apiserver.
+	What you see from the kube-apiserver is just a read-only mirror of the Pod. You can view details about the Pod,
+	but you cannot edit or delete it like the usual Pods.
+- So then why would you want to use static Pods? Since static Pods are not dependent on the Kubernetes control plane, you can use static Pods
+	to deploy the control plane components itself as Pods on a Node. Well, start by installing kubelet on all the master Nodes,
+	then create Pod definition files that uses docker images of the various control plane components
+	such as the API server, controller, ETCD, et cetera. Place the definition files in the designated manifest folder,
+	and the kubelet takes care of deploying the control plane components themselves as Pods on the cluster.
+	This way, you don't have to download the binaries,
+	configure services, or worry about the services crashing. If any of these services were to crash, since it's a static Pod,
+	it'll automatically be restarted by the kubelet.
+- That's how the kube admin tool sets up a Kubernetes cluster,which is why when you list the Pods
+	in the kube-system namespace you see the control plane components as Pods
+- difference between static Pods and DaemonSets, DaemonSet is handled by a DaemonSet controller through the kube-apiserver.
+	Both static Pods and Pods created by DaemonSets are ignored by the kube-scheduler.
