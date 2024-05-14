@@ -1,5 +1,4 @@
-# kubectl top node 
-# kubectl top pod 
+# top
 
 # kubectl logs -f pod-name container-name
 
