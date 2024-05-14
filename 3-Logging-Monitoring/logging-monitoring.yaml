@@ -12,19 +12,13 @@ Monitoring Cluster Components
 - Kubernetes does not come with a full-featured built-in monitoring solution. However, there are a number
 	of open-source solutions available today uch as Metrics Server, Prometheus, the Elastic Stack,
 	and proprietary solutions like Datadog and Dynatrace
-- Heapster was one of the original projects that enabled monitoring. However, Heapster is now deprecated,
-	and a slimmed-down version was formed, known as the Metrics Server
-- You can have one Metrics Server per Kubernetes cluster.The Metrics Server retrieves metrics from each of the Kubernetes nodes and pods,
-	aggregates them, and stores them in memory (not on disk) And as a result, you cannot see historical performance data.
-	For that, you must rely on one of the advanced monitoring solutions
+
+-  top command  provides the CPU and memory consumption of each of the node.
+
 - Kubernetes runs an agent on each node known as the kubelet. The kubelet also contains a sub component
 	known as the cAdvisor or Container Advisor. cAdvisor is responsible for retrieving performance metrics from pods
-	and exposing them through the kubelet API to make the metrics available for the Metrics Server.
-- If you're using minikube for your local cluster, run the command, minikube addons enable metrics-server.
-	For all other environments,deploy the Metrics Server by cloning the Metrics Server deployment files
-	from the GitHub repository, and then deploying the required components using the kubectl create command
-- kubectl top node command  provides the CPU and memory consumption of each of the node.
-- kubectl top pod  command to view performance metrics of pods in Kubernetes.
+	and exposing them through the kubelet API to make the metrics available for the monitoring servers.
+
 
 Application logs
 - Once the pod is running, we can view the logs using the kubectl logs command with the pod name. kubectl logs -f pod-name 
