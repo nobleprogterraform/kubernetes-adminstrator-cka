@@ -14,17 +14,17 @@ spec:
     image: busybox
 
 
-    Multicontainer PODs
-	- The idea of decoupling a large monolithic application into sub components known as microservices enables us to develop and deploy a 
-	set of independent, small, and reusable code
-	- However, at times, you may need two services to work together, such as a web server and a logging service.
-		You need one agent instance per web server instance paired together. You don't want to merge
-		and load the code of the tool services, as each of them target different functionalities and you would still like them to be developed
-		and deployed separately.
-	- You need one agent per web server instance paired together that can scale up and down together
-		and that is why you have multi container pods that share the same life cycle, which means they are created together
-		and destroyed together. They share the same network space, which means they can refer to each other as local host,
-		and they have access to the same storage volumes.
-	- To create a multi-container pod, add the new container information to the pod definition file. As container section under spec 
-		is an array.
-	- There are 3 common patterns, when it comes to designing multi-container PODs. Sidecar, The Adapter, The Ambassador pattern
+Multicontainer PODs
+- The idea of decoupling a large monolithic application into sub components known as microservices enables us 
+to develop and deploy a set of independent, small, and reusable code
+
+- However, at times, you may need two services to work together, such as a web server and a logging service.
+You need one agent instance per web server instance paired together. You don't want to merge
+and load the code of the tool services, as each of them target different functionalities and you would still like them to be developed
+nd deployed separately.
+
+- You need one agent per web server instance paired together that can scale up and down together
+and that is why you have multi container pods that share the same life cycle, which means they are created together
+and destroyed together. They share the same network space, which means they can refer to each other as local host,
+and they have access to the same storage volumes.
+
