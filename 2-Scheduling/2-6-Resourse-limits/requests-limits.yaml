@@ -21,38 +21,38 @@ spec:
 
 
 Resource Requirements and Limits
-	- whenever a pod is placed on a node, it consumes the resources available on that node. you can specify the amount of CPU
-		and memory required for a pod when creating one, and this is known as the resource request for a container
-	- when the scheduler tries to place the pod on a node, it uses these numbers to identify a node which has sufficient amount of resources 
-		available
-	- 1 CPU means 1 AWS vCPU, 1 GCP core, 1 Azure Core, 1 Hyperthread. cpu can also be 0.1 or 100m (m stands for milli). Minimum cpu
-		allowed is 1m.
-	- Memory can be 1G (Gigabyte), 1M(Megabyte), 1K(kilobyte), 1Gi(Gibibyte), 1Mi(Mebibyte), 1Ki(Kibibyte)
-	- A container cannot use more CPU resources than its limit. However, this is not the case with memory.A container can use more memory 
-		resources than its limit. So if a pod tries to consume more memory than its limit constantly, the pod will be terminated
-		and you'll see that the pod terminated with an OOM (out of memoery)error in the logs or in the output of the described command 
-		when you run it
-	- Lets consider a scenario where 2 pods are competing for resources in a single node, there are 4 types of configuration possible here
-		1. No Requests, No Limits (Not ideal as pod 1 can consume all CPUs with no cpu available for pod 2)
-		2. No Request, Limits set (taken as limits=request,Not idea as even if there are free CPUs not used by pod2, pod1 can not access them)
-		3. Request set, Limits Set (better as minimum cpu is guaranted but not ideal as can not use not utilize cpus)
-		4. Request set, No Limits (ideal as minimum CPU is guaranted and in case pod1 needs more cpu and pod2 is not using then pod1 can use it)
-	- So remember you need to make sure that all the pods have some requests set because that's the only way a pod
-		will have resources guaranteed. So if there is any pod that has no request set and there are no limits set for all the other pods,
-		then it's possible that any pod could consume all of the memory.
-  
-	- by default, Kubernetes does not have resource requests or limits configured for pods. But then how do we ensure that every pod created 
-		has some default set? Now this is possible with limit ranges. 
-	- So if you create or change a limit range, it does not affect existing pods. It'll only affect newer pods that are created
-		after the limit range is created or updated
-  
-	- Is there any way to restrict the total amount of resources that can be consumed by applications deployed in a Kubernetes cluster?
-		For example, if we had to say that all the pods together shouldn't consume more than this much of CPU or memory
-		what we could do is create quotas at a namespace level
-		apiVersion: v1, kind: ResourceQuota
-		spec:
-		  hard:
-		   requests.cpu: 4
-		   requests.memory: 4Gi
-		   limits.cpu: 10
-		   limits.memory: 10 Gi
+- whenever a pod is placed on a node, it consumes the resources available on that node. you can specify the amount of CPU
+	and memory required for a pod when creating one, and this is known as the resource request for a container
+- when the scheduler tries to place the pod on a node, it uses these numbers to identify a node which has sufficient amount of resources 
+	available
+- 1 CPU means 1 AWS vCPU, 1 GCP core, 1 Azure Core, 1 Hyperthread. cpu can also be 0.1 or 100m (m stands for milli). Minimum cpu
+	allowed is 1m.
+- Memory can be 1G (Gigabyte), 1M(Megabyte), 1K(kilobyte), 1Gi(Gibibyte), 1Mi(Mebibyte), 1Ki(Kibibyte)
+- A container cannot use more CPU resources than its limit. However, this is not the case with memory.A container can use more memory 
+	resources than its limit. So if a pod tries to consume more memory than its limit constantly, the pod will be terminated
+	and you'll see that the pod terminated with an OOM (out of memoery)error in the logs or in the output of the described command 
+	when you run it
+- Lets consider a scenario where 2 pods are competing for resources in a single node, there are 4 types of configuration possible here
+	1. No Requests, No Limits (Not ideal as pod 1 can consume all CPUs with no cpu available for pod 2)
+	2. No Request, Limits set (taken as limits=request,Not idea as even if there are free CPUs not used by pod2, pod1 can not access them)
+	3. Request set, Limits Set (better as minimum cpu is guaranted but not ideal as can not use not utilize cpus)
+	4. Request set, No Limits (ideal as minimum CPU is guaranted and in case pod1 needs more cpu and pod2 is not using then pod1 can use it)
+- So remember you need to make sure that all the pods have some requests set because that's the only way a pod
+	will have resources guaranteed. So if there is any pod that has no request set and there are no limits set for all the other pods,
+	then it's possible that any pod could consume all of the memory.
+
+- by default, Kubernetes does not have resource requests or limits configured for pods. But then how do we ensure that every pod created 
+	has some default set? Now this is possible with limit ranges. 
+- So if you create or change a limit range, it does not affect existing pods. It'll only affect newer pods that are created
+	after the limit range is created or updated
+
+- Is there any way to restrict the total amount of resources that can be consumed by applications deployed in a Kubernetes cluster?
+	For example, if we had to say that all the pods together shouldn't consume more than this much of CPU or memory
+	what we could do is create quotas at a namespace level
+	apiVersion: v1, kind: ResourceQuota
+	spec:
+	  hard:
+	   requests.cpu: 4
+	   requests.memory: 4Gi
+	   limits.cpu: 10
+	   limits.memory: 10 Gi
