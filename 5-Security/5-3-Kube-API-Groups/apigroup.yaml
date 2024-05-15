@@ -27,7 +27,7 @@ Kubernetes API Groups
 		So you have to authenticate to the API using your certificate files by passing them in the command line.
 		An alternate option is to start a Kube control proxy client. 
 		kubectl proxy --api-prefix=/
-		http://localhost:8001/api/v1/pods /apis/apps/v1/deployments
+		http://localhost:8001/api/v1/namespaces /apis/apps/v1/deployments
 		The Kube control proxy command (kubectl proxy) launches a proxy service 
 		locally on port 8001 and uses credentials and certificates from your Kube config file to access the cluster. That way, you don't have to specify
 		those in the cURL command. http://localhost:8001
