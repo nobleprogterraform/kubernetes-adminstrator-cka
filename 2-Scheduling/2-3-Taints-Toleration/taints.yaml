@@ -1,6 +1,7 @@
 # kubectl cordon node02
-#kubectl taint nodes node1 app=blue:NoSchedule
+#kubectl taint nodes node01 app=blue:NoSchedule
 
+cat <<EOF | kubectl create -f -
 apiVersion: v1
 kind: Pod
 metadata:
@@ -14,6 +15,10 @@ spec:
    operator: "Equal"
    value: "red"
    effect: "NoSchedule"
+EOF
+
+# untaint
+kubectl taint nodes node01 app=blue:NoSchedule-
 
 
  Taints and Tolerations

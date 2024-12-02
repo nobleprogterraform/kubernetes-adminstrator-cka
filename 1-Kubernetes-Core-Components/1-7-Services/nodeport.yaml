@@ -1,3 +1,4 @@
+cat << EOF | kubectl create -f -
 apiVersion: v1
 kind: Service
 metadata:
@@ -11,6 +12,24 @@ spec:
  selector:
    app: myapp
    type: front-end
+EOF
+
+cat <<EOF | kubectl create -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-server
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+EOF
+
+
+
 
 
 Services: Nodeport
@@ -34,4 +53,59 @@ Services: Nodeport
 		This way you can access your application using the IP of any node in the cluster and using the same port number
 		which in this case is 30,008
 	- kubectl create -f service- definition.yaml
-	- kubectl get services 
+	- kubectl get services
+
+
+
+	Based on the Kubernetes Services lecture, here are several key questions that an experienced DevOps engineer might ask, along with concise answers:
+
+
+### 2. **How does the Kubernetes Service handle load balancing?**
+   **Answer:**  
+   Kubernetes Services automatically balance load across multiple Pods. When multiple Pods are matched to a service via labels and selectors, the service uses a random algorithm to distribute incoming traffic evenly among the Pods. This ensures high availability and fault tolerance.
+
+---
+
+### 3. **What happens when Pods are spread across multiple nodes in the cluster?**
+   **Answer:**  
+   Kubernetes automatically handles the distribution of services across all nodes in the cluster. When a service is created, it is available on all nodes with the same port number. This ensures that users can access the service using the IP of any node, without needing additional configuration.
+
+---
+
+### 4. **Can you explain how Kubernetes Services use labels and selectors to connect to Pods?**
+   **Answer:**  
+   Services use **labels and selectors** to identify which Pods they should forward traffic to. A service's selector matches the labels of the Pods. For example, if a Pod has the label `app=my-app`, the service will use this label in its selector to route requests to the appropriate Pods. This dynamic mapping allows the service to always target the right set of Pods.
+
+---
+
+### 5. **What is the default port range for NodePort services?**
+   **Answer:**  
+   The default port range for **NodePort** services is between 30,000 and 32,767. Kubernetes will automatically assign a port in this range unless a specific port is provided in the service definition.
+
+---
+
+
+### 7. **How does the service automatically update when Pods are added or removed?**
+   **Answer:**  
+   When Pods with matching labels are added or removed, the **Kubernetes service** automatically adjusts its list of endpoints to include or exclude these Pods. This dynamic behavior ensures the service remains up-to-date without manual intervention.
+
+---
+
+### 8. **What is the difference between `targetPort`, `port`, and `nodePort` in a service definition?**
+   **Answer:**  
+   - **targetPort:** The port on the Pod where the application is running (e.g., port 80 for a web server).
+   - **port:** The port on the service that is exposed within the cluster.
+   - **nodePort:** The external port on the node that allows access to the service from outside the cluster (only used in NodePort services).
+
+---
+
+### 9. **What would happen if you don’t specify `targetPort` or `nodePort` in a service definition?**
+   **Answer:**  
+   - If `targetPort` is not specified, it defaults to the same value as `port`.
+   - If `nodePort` is not specified, Kubernetes will automatically allocate a random port from the valid NodePort range (30,000–32,767).
+
+---
+
+### 10. **Can you access a Kubernetes service externally without exposing it using NodePort or LoadBalancer?**
+   **Answer:**  
+   No, external access typically requires using **NodePort** or **LoadBalancer** services. **ClusterIP** is only for internal communication within the cluster, and does not expose the service externally.

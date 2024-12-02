@@ -1,6 +1,6 @@
 # kubectl get pods -n kube-system
 # sudo cat etc/kubernetes/manifest/kube-apiserver.yaml
-
+---
 
 Kube-API server
 	- Earlier, we discussed that the kube-apiserver is the primary management component in Kubernetes. When you run a kubectl command,
@@ -24,3 +24,55 @@ Kube-API server
 		You can see the options within the pod definition file, located at etc/kubernetes/manifest folder.
 		You can also see the running process and the effective options by listing the process 
 		on the master node and searching for kube-apiserver. By running ps -aux | grep kube-apiserver
+
+
+
+		=============
+		Here are some questions experienced DevOps engineers might ask about the kube-apiserver, along with concise answers:
+
+---
+
+
+### 2. **How does the kube-apiserver interact with etcd?**  
+   - **Answer:** The kube-apiserver is the only component that directly communicates with etcd. It retrieves, updates, and stores cluster state and configuration data in etcd.
+
+### 3. **How is a new pod created and scheduled in Kubernetes?**  
+   - **Answer:**  
+     - The kube-apiserver receives the request and authenticates it.  
+     - It creates the pod object in etcd but does not assign it to a node.  
+     - The scheduler monitors for unscheduled pods, assigns a node, and updates the kube-apiserver.  
+     - The kube-apiserver informs the kubelet, which creates the pod on the assigned node and deploys the container.  
+     - The kubelet updates the pod status back to the kube-apiserver.
+
+### 4. **How can you view kube-apiserver options in an existing cluster?**  
+   - **Answer:**  
+     - If using **kubeadm**, check the pod definition file at `/etc/kubernetes/manifests/kube-apiserver.yaml`.  
+     - For non-kubeadm setups, view the service file at `/etc/systemd/system/kube-apiserver.service`.  
+     - Alternatively, list running processes using `ps -ef | grep kube-apiserver`.
+
+### 5. **What are some important kube-apiserver configuration options?**  
+   - **Answer:** Key options include:  
+     - `--etcd-servers`: Specifies the etcd server endpoints.   
+     - `--authorization-mode`: Defines authorization methods (e.g., RBAC).  
+     - `--tls-cert-file` and `--tls-private-key-file`: Specify SSL/TLS certificates for secure communication.
+
+### 6. **How does the kube-apiserver ensure security?**  
+   - **Answer:** It uses SSL/TLS certificates to encrypt communication between components. It also supports authorization modes (RBAC, ABAC).
+
+### 7. **Can you interact with the kube-apiserver without `kubectl`?**  
+   - **Answer:** Yes, you can interact directly with the kube-apiserver by sending HTTP/HTTPS requests to its REST API using tools like `curl` or Postman.
+
+### 8. **What happens if the kube-apiserver fails?**  
+   - **Answer:** The cluster becomes read-only. You can still access existing resources, but no new resources can be created or updated until the kube-apiserver is restored.
+
+### 9. **How does the scheduler and kube-apiserver coordinate?**  
+   - **Answer:** The scheduler watches the kube-apiserver for unscheduled pods. Once it assigns a pod to a node, it updates the kube-apiserver, which then informs the kubelet on the respective node.
+
+### 10. **What is the role of certificates in the kube-apiserver?**  
+   - **Answer:** Certificates secure communication between the kube-apiserver and other components, ensuring data confidentiality and integrity.
+
+
+
+
+	
+

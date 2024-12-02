@@ -1,6 +1,9 @@
 # kubectl label nodes node01 size=Large
 # kubectl label nodes node02 size=Medium
 
+kubectl get nodes --show-labels
+
+cat <<EOF | kubectl create -f -
 apiVersion: v1
 kind: Pod
 metadata:
@@ -11,7 +14,11 @@ spec:
    image: nginx
  nodeSelector:
   size: Large
+EOF
 
+# Remove node lable
+kubectl label nodes node01 size-
+kubectl label nodes node02 size-
 
   Node selector
 	- we can set a limitation on the pods so that they only run on particular nodes (for example larger nodes with more compute power or resources)

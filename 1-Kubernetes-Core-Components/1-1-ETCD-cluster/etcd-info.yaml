@@ -63,3 +63,77 @@
 		or replica sets are updated in the etcd server
     If you set up your cluster using kubeadm,then kubeadm deploys the etcd server for you as a pod
 		in the kube system namespace (you can get this pod info using kubectl get pods -n kube-system)
+
+		kubectl exec -n=kube-system etcd-controlplane -- etcdctl version
+		
+
+		kubectl exec etcd-controlplane -n kube-system -- sh -c "etcdctl get / --prefix --keys-only --limit=10 --cacert /etc/kubernetes/pki/etcd/ca.crt --cert /etc/kubernetes/pki/etcd/server.crt  --key /etc/kubernetes/pki/etcd/server.key" 
+
+
+
+		## Questions
+	Here are some questions you might anticipate from experienced DevOps engineers, along with concise answers:
+
+---
+
+### **1. What makes etcd different from a traditional database?**  
+- **Answer**: Unlike traditional relational databases, etcd is a distributed key-value store. It stores data as key-value pairs instead of rows and columns, making it ideal for configuration data and state management in distributed systems like Kubernetes. Changes to one key-value pair do not impact others.
+
+---
+
+### **2. How does etcd ensure high availability and consistency?**  
+- **Answer**: etcd uses the **RAFT consensus algorithm** to maintain consistency across nodes in a cluster. It ensures that data is replicated to multiple nodes and only committed when a majority (quorum) agrees. This provides fault tolerance and consistency.
+
+---
+
+### **3. What are some best practices for setting up an etcd cluster?**  
+- **Answer**:  
+  - Deploy an odd number of nodes (typically 3 or 5) to prevent split-brain scenarios.  
+  - Ensure network reliability and low latency between nodes.  
+  - Regularly back up etcd data.  
+  - Use TLS for secure communication between etcd nodes and clients.
+
+---
+
+### **4. How does the API version affect etcdctl commands?**  
+- **Answer**: etcdctl supports two major API versions: v2 and v3. The commands differ between these versions:  
+  - **v2**: Uses `set` and `get` commands.  
+  - **v3**: Uses `put` and `get` commands.  
+Check the API version by running `etcdctl version`. To switch to v3, set the environment variable `ETCDCTL_API=3`.
+
+---
+
+### **5. What happens if an etcd node fails?**  
+- **Answer**: If a node fails, etcd continues operating as long as a quorum (majority of nodes) is available. The failed node can be replaced or recovered, and the cluster will replicate data to it once it rejoins.
+
+---
+
+### **6. Why is etcd critical in a Kubernetes cluster?**  
+- **Answer**: etcd stores the entire state of a Kubernetes cluster, including configuration data, secrets, and service discovery details. Kubernetes components rely on etcd to retrieve and update the desired cluster state.
+
+---
+
+### **7. What security measures should be implemented for etcd?**  
+- **Answer**:  
+  - Use **TLS encryption** for communication between nodes and clients.  
+  - Enable **authentication** and **role-based access control (RBAC)**.  
+  - Restrict access to etcd to only trusted clients and nodes.
+
+---
+
+### **8. Can you explain the difference between linearizability and eventual consistency in etcd?**  
+- **Answer**: etcd provides **linearizability**, meaning read and write operations are guaranteed to reflect the most recent state. This differs from **eventual consistency**, where updates might take time to propagate across nodes.
+
+---
+
+### **9. How do you back up and restore etcd data?**  
+- **Answer**: Use the `etcdctl snapshot save <filename>` command to back up data and `etcdctl snapshot restore <filename>` to restore. It’s crucial to perform backups regularly, especially before major Kubernetes upgrades.
+
+---
+
+### **10. What impact does network latency have on an etcd cluster?**  
+- **Answer**: High network latency can slow down consensus operations, affecting write performance and potentially causing timeouts. It’s critical to deploy etcd nodes in a low-latency, reliable network environment.
+
+---
+
+These questions and answers cover technical aspects DevOps engineers are likely to ask, focusing on etcd’s role, configuration, and best practices in a Kubernetes environment.

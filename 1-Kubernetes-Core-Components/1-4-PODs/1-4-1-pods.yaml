@@ -1,15 +1,16 @@
+cat <<EOF | kubectl create -f -
 apiVersion: v1
 kind: Pod
 metadata:
   name: web-server
   labels:
-    app: blue
-  
+    app: myapp
+    type: front-end
 spec:
   containers:
   - name: nginx
     image: nginx:1.14.2
-- name: 
+EOF
 
 
 #kubectl run nginx --image=nginnnx
@@ -66,3 +67,34 @@ PODs
 	- To crate the pods execute cubectl create -f pod-definition.yaml 
 	- To get pods execute kubectl get pods
 	- to see details of a pod kubectl describe pod myapp-pod
+
+	Based on the transcript, here are some questions you might expect from experienced DevOps engineers, along with concise and accurate answers:
+
+### 2. **Can we scale an application by adding containers to an existing pod?**
+   **Answer:** No, Kubernetes does not allow scaling by adding containers to an existing pod. Instead, to scale, you create new pods. Each pod typically runs a single instance of your application, and scaling involves adding new pods, not modifying existing ones.
+
+### 3. **Why would you have multiple containers within a single pod?**
+   **Answer:** Multiple containers are used within a pod when they need to work closely together. For example, a main application container and a helper container (such as one for logging or processing tasks). These containers share the same network namespace and storage, making it easier for them to communicate and manage shared resources.
+
+
+### 5. **How does Kubernetes ensure communication between containers in the same pod?**
+   **Answer:** Containers in the same pod share the same network namespace, meaning they can communicate with each other using `localhost`. They can also share volumes for storage, making it easy to share data between the containers.
+
+### 7. **What is the difference between a pod and a container in Kubernetes?**
+   **Answer:** A container is the actual runtime unit that contains the application and its dependencies, while a pod is a higher-level abstraction that encapsulates one or more containers. Pods are used to deploy and manage containers in Kubernetes, providing shared resources like storage and networking.
+
+### 8. **How does Kubernetes handle load balancing between multiple pods?**
+   **Answer:** While the transcript does not discuss this in detail, Kubernetes handles load balancing across multiple pods using services. A Kubernetes Service provides a stable endpoint and can distribute traffic among pods using round-robin or other algorithms. This allows for load balancing when scaling up pods.
+
+### 9. **Can Kubernetes pull images from private Docker repositories?**
+   **Answer:** Yes, Kubernetes can pull images from private Docker repositories. You can configure Kubernetes to use private registries by setting up a secret for pulling images from the private repository.
+
+### 10. **What happens if a container within a pod crashes?**
+   **Answer:** If a container within a pod crashes, Kubernetes can automatically restart the container depending on the pod's restart policy (e.g., `Always` or `OnFailure`). If the pod itself fails or is deleted, Kubernetes will ensure that the desired number of replicas are maintained by launching a new pod if necessary.
+
+### 11. **How do you expose a pod to external traffic?**
+   **Answer:** The transcript mentions that exposing a pod to external traffic will be covered in a later lecture, but in general, Kubernetes uses Services to expose pods. A Service acts as a load balancer that forwards external requests to the appropriate pods based on defined selectors and networking rules.
+
+### 12. **What happens when you scale down the application in Kubernetes?**
+   **Answer:** Scaling down in Kubernetes involves deleting some of the pods. Kubernetes will terminate the specified number of pods, and the containers within those pods will stop. This ensures that the application adjusts to the reduced load.
+

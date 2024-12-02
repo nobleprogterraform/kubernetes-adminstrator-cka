@@ -1,7 +1,7 @@
 # kubectl get pods -n kube-system
-# sudo cat etc/kubernetes/manifest/kube-controller-manager.yaml
+# sudo cat /etc/kubernetes/manifests/kube-controller-manager.yaml
 
-# sudo cat etc/kubernetes/manifest/kube-scheduler.yaml
+# sudo cat /etc/kubernetes/manifests/kube-scheduler.yaml
 
 # ps aux | grep kubelet
 
@@ -35,6 +35,128 @@ Kube Controller manager
 	- You can also see the running process and the effective options by listing the process on the master node 
 		and searching for Kube Controller Manager. ps -aux | grep kub-controller-manager 
 
+		Here are some anticipated questions from experienced DevOps engineers about the Kube Controller Manager, along with concise answers:
+
+---
+### 2. **What are some examples of controllers managed by the Kube Controller Manager?**  
+   - **Answer:**  
+     - **Node Controller:** Monitors node health and handles unreachable nodes.  
+     - **Replication Controller:** Ensures the desired number of pods are running in a replica set.  
+     - **Deployment Controller, Service Controller, Namespace Controller, Persistent Volume Controller**, etc.
+
+### 3. **How does the Node Controller handle an unreachable node?**  
+   - **Answer:**  
+     - Marks the node as unreachable after 40 seconds of missed heartbeats.  
+     - Waits 5 minutes before evicting pods from the node.  
+     - If the pods are part of a replica set, they are rescheduled on healthy nodes.
+
+### 4. **How do you configure the Kube Controller Manager?**  
+   - **Answer:** You configure it via options provided at runtime. These include settings like `--node-monitor-period`, `--node-grace-period`, and `--controllers` (to enable/disable specific controllers).
+
+### 5. **How do you view Kube Controller Manager options in a cluster?**  
+   - **Answer:**  
+     - In **kubeadm** setups: Check the pod definition file at `/etc/kubernetes/manifests/kube-controller-manager.yaml`.  
+     - In non-kubeadm setups: Inspect the service file at `/etc/systemd/system/kube-controller-manager.service` or use `ps -ef | grep kube-controller-manager`.
+
+### 6. **Can you disable specific controllers in the Kube Controller Manager?**  
+   - **Answer:** Yes, by using the `--controllers` option. You can enable or disable specific controllers (e.g., `--controllers=*,-replication-controller` to disable replication controller).
+
+### 7. **What happens if the Kube Controller Manager fails?**  
+   - **Answer:** The cluster will no longer monitor or reconcile the state of its resources, potentially leading to issues like unmonitored node failures or unmaintained replica counts.
+
+### 8. **How do controllers interact with the kube-apiserver?**  
+   - **Answer:** Controllers continuously watch the kube-apiserver for changes in resource states and update the desired state by making API calls back to the kube-apiserver.
+
+### 9. **What are some key default settings for the Node Controller?**  
+   - **Answer:**  
+     - `--node-monitor-period`: Frequency of node status checks (default: 5s).  
+     - `--node-grace-period`: Time to wait before marking a node as unreachable (default: 40s).  
+     - `--pod-eviction-timeout`: Time to wait before evicting pods from an unreachable node (default: 5m).
+
+### 10. **How do you troubleshoot a controller not functioning as expected?**  
+   - **Answer:**  
+     - Check if the controller is enabled via the `--controllers` option.  
+     - Review logs of the Kube Controller Manager pod or service.  
+     - Ensure proper configuration in the controller's runtime options.
+
+Kube-Scheduler:
+### Organized Transcript: Kubernetes Scheduler  
+
+---
+
+#### **1. Overview of Scheduler Functionality**  
+- The Kubernetes scheduler assigns pods to nodes based on resource requirements and other constraints.  
+- Each pod specifies its CPU and memory needs, and the scheduler matches these needs to the available nodes.
+---
+
+#### **2. Scheduling Phases**  
+**Phase 1: Filtering Nodes**  
+- The scheduler first eliminates nodes that cannot accommodate the pod's requirements.  
+- Example: Nodes with insufficient CPU or memory are filtered out.  
+- After filtering, only nodes that meet the resource requirements remain.
+
+**Phase 2: Ranking Nodes**  
+- The scheduler ranks the remaining nodes using a **priority function** that assigns a score (0 to 10).  
+- Example: The function calculates the resources that will be free after placing the pod.  
+  - Node A: 6 CPUs free after placement.  
+  - Node B: 2 CPUs free after placement.  
+  - Node A gets a higher score and is selected.
+
+---
+
+#### **3. Customization and Extensions**  
+- Kubernetes allows customization of scheduling policies.  
+- You can also **write your own scheduler** to implement specific logic and criteria.  
+- Topics related to scheduling customization:  
+  - **Resource Requirements & Limits**  
+  - **Taints and Tolerations**  
+  - **Node Selectors & Affinity Rules**  
+
+---
+
+#### **4. Installing and Configuring the Kube-Scheduler**  
+- **Installation Steps:**  
+  - Download the kube-scheduler binary from the Kubernetes release page.  
+  - Extract and run it as a service.  
+  - Specify the scheduler configuration file when starting the service.  
+
+---
+
+#### **5. Viewing Kube-Scheduler Options**  
+- **kubeadm Setup:**  
+  - The kube-scheduler is deployed as a pod in the `kube-system` namespace.  
+  - Pod definition file: `/etc/kubernetes/manifests/kube-scheduler.yaml`.  
+
+- **Non-kubeadm Setup:**  
+  - View the running process and options using:  
+    ```bash
+    ps -ef | grep kube-scheduler
+    ```  
+### Important Questions DevOps Engineers Might Ask About the Kubernetes Scheduler:  
+
+---
+
+### 1. **How does the Kubernetes scheduler work?**  
+   - **Answer:** It assigns pods to nodes in two phases: filtering nodes based on resource requirements and ranking the remaining nodes to find the best fit using a priority function.
+
+### 2. **What criteria does the scheduler use to filter and rank nodes?**  
+   - **Answer:** It filters nodes based on CPU, memory, and other constraints. It ranks nodes by calculating free resources after placing the pod and assigns a score (0-10).
+
+### 3. **Can you customize the scheduling behavior?**  
+   - **Answer:** Yes, you can modify scheduling policies or create custom schedulers to implement specific logic using plugins or custom configuration files.
+
+### 6. **What happens if the kube-scheduler fails?**  
+   - **Answer:** New pods won’t be scheduled, but existing workloads will continue running. Restoring the scheduler is necessary to handle new resource requests.
+
+### 8. **How can DevOps engineers troubleshoot scheduling issues?**  
+   - **Answer:**  
+     - Check scheduler logs for errors.  
+     - Review pod events using `kubectl describe pod <pod-name>`.  
+     - Verify resource requests and constraints in the pod specification.  
+
+-
+
+
   Kubelet
 	- The kubelet in the Kubernetes worker node registers the node with a Kubernetes cluster.
 		When it receives instructions to load a container or a pod on the node,
@@ -44,7 +166,57 @@ Kube Controller manager
 	- If you use the kubeadm tool to deploy your cluster,it does not automatically deploy the kubelet.
 		Now that's the difference from other components. You must always manually install the kubelet on your worker nodes.
 		Download the installer, extract it, and run it as a service.
-	- You can view the running kubelet process and the effective options by listing the process ps -aux | grep kubelet
+	- You can view the running kubelet process and the effective options by listing the process 
+	ps -aux | grep kubelet
+
+### Anticipated Questions from Experienced DevOps Engineers about Kubelet  
+
+---
+
+### 1. **What is the role of the kubelet in a Kubernetes cluster?**  
+   - **Answer:** The kubelet is responsible for managing pods and their containers on a worker node. It ensures containers are running, communicates with the API server, and reports the node's status.
+
+---
+
+### 2. **How does the kubelet interact with the container runtime?**  
+   - **Answer:** The kubelet instructs the container runtime (e.g., Docker, containerd) to pull images and run containers. It then monitors their health and performance.
+
+---
+
+### 3. **How does the kubelet communicate with the control plane?**  
+   - **Answer:** The kubelet registers the node with the control plane and communicates with the kube-apiserver to receive pod specifications and report node and pod status.
+
+---
+
+### 4. **Is the kubelet automatically installed by kubeadm?**  
+   - **Answer:** No, kubeadm does not automatically install the kubelet. You must manually install it on each worker node.
+
+---
+
+### 5. **How can you view and verify the kubelet's running configuration?**  
+   - **Answer:** Use the following command to list the running kubelet process and its options:  
+   ```bash
+   ps -ef | grep kubelet
+   ```
+
+---
+
+### 6. **What is TLS bootstrapping in the context of the kubelet?**  
+   - **Answer:** TLS bootstrapping is a process where the kubelet automatically generates and registers its TLS certificates with the control plane, enabling secure communication.
+
+---
+
+### 7. **How do you manually install the kubelet?**  
+   - **Answer:**  
+     - Download the kubelet binary from the Kubernetes release page.  
+     - Extract it and configure it to run as a service.  
+     - Ensure it connects to the control plane using appropriate certificates and configuration.
+
+---
+
+### 8. **What happens if the kubelet fails on a node?**  
+   - **Answer:** If the kubelet fails, the node cannot manage or report the status of its pods, potentially leading to service disruptions. Kubernetes will try to reschedule affected pods on healthy nodes if necessary.
+
 
  Kube proxy
 	- Within a Kubernetes cluster, every pod can reach every other pod. This is accomplished by deploying
@@ -70,3 +242,42 @@ Kube Controller manager
 	- To install kube-proxy. Download the kube-proxy binary from the Kubernetes release page, extract it,
 		and run it as a service. The kubeadm tool deploys kube-proxy as pods on each node.
 		In fact, it is deployed as a DaemonSet, so a single pod is always deployed on each node in the cluster
+
+		Based on the provided transcript about kube-proxy in a Kubernetes cluster, here are some questions you might anticipate from experienced DevOps engineers, along with concise and accurate answers:
+
+### 1. **What is the role of kube-proxy in a Kubernetes cluster?**
+   - **Answer**: Kube-proxy runs on each node and manages the routing of traffic to the appropriate backend pod. It ensures that traffic reaching a service is forwarded to one of the pods backing that service, using methods like iptables or IPVS.
+
+### 2. **How does kube-proxy ensure that services are accessible across the entire cluster?**
+   - **Answer**: Kube-proxy creates iptables or IPVS rules on each node to route traffic to the correct pod when a service is accessed. This enables the service to be accessed from any node in the cluster, regardless of where the actual pod resides.
+
+### 3. **Why can't a service join the pod network in Kubernetes?**
+   - **Answer**: A service is a virtual component, not a container like a pod. It doesn’t have network interfaces or actively listening processes, so it cannot join the pod network. It instead uses kube-proxy to route traffic to the backend pods.
+
+### 4. **What networking solution does kube-proxy use to forward traffic?**
+   - **Answer**: Kube-proxy primarily uses iptables (or IPVS in some cases) to create rules that route traffic to the backend pods. These rules are updated dynamically as services and pods are created or removed.
+
+### 5. **How does kube-proxy differ from a service in terms of functionality?**
+   - **Answer**: A service is a logical abstraction that provides a stable endpoint (IP or DNS) for accessing a set of pods. Kube-proxy, on the other hand, is the process that runs on each node to implement the routing of traffic to the correct backend pods based on the service's IP.
+
+### 6. **How does Kubernetes ensure that a service IP is always accessible, even though pods may change their IP addresses?**
+   - **Answer**: Kubernetes services provide a stable virtual IP (VIP) that can be accessed, while kube-proxy handles forwarding traffic from this IP to the actual backend pod, even if the pod's IP changes, by updating iptables rules dynamically.
+
+### 7. **Can kube-proxy be deployed as a DaemonSet?**
+   - **Answer**: Yes, kube-proxy is typically deployed as a DaemonSet in Kubernetes, which ensures that exactly one instance of the kube-proxy pod is running on every node in the cluster.
+
+### 8. **What is the difference between iptables and IPVS for kube-proxy?**
+   - **Answer**: iptables is the default method kube-proxy uses to route traffic to services. IPVS (IP Virtual Server) is an alternative that can provide better scalability and performance for large clusters, as it supports more efficient load balancing techniques compared to iptables.
+
+### 9. **How does kube-proxy ensure high availability for services?**
+   - **Answer**: Kube-proxy ensures high availability by dynamically updating the routing rules whenever pods are added or removed. It always directs traffic to the available pods backing a service, ensuring uninterrupted access.
+
+### 10. **Can you explain how kube-proxy interacts with the Kubernetes control plane?**
+   - **Answer**: Kube-proxy listens for changes in the Kubernetes control plane, such as the creation or deletion of services and pods. When a new service is created, kube-proxy updates iptables or IPVS rules to ensure that traffic is correctly routed to the service's backend pods.
+
+### 11. **What happens if kube-proxy is down on a node?**
+   - **Answer**: If kube-proxy is down on a node, the traffic routing for services on that node will not work properly. However, services on other nodes will continue to function, and kube-proxy can be restarted to restore functionality.
+
+### 12. **What is the relationship between kube-proxy and the pod network?**
+   - **Answer**: Kube-proxy is responsible for forwarding traffic from services to the pod network, but it does not directly participate in the pod network. It uses network rules to connect external traffic to the correct pod IPs based on services.
+

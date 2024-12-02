@@ -1,4 +1,4 @@
-# cat /var/lib/kubelet/
+# cat /var/lib/kubelet/config.yaml
 # property named: staticPodPath=/etc/kubernetes/manifests
 
 

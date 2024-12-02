@@ -5,8 +5,36 @@ kind: Namespace
 metadata:
   name: dev
 
-#kubectl create -f 1-4-1-pods.yaml --namespace=dev
+	
 
+#kubectl create -f ns-definition.yaml --namespace=dev
+
+
+cat << EOF | kubectl create -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  namespace: dev
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end
+EOF
 
 Namespace
 	- So far we have created objects such as pods, deployments, and services in our cluster.
@@ -32,8 +60,54 @@ Namespace
 	- kubectl create -f pod-def.yaml --namespace=dev or put namespace: dev in pod-def.yaml under metadata section 
 	- To create a new namespace create definition file with apiVersion:v1, kind:Namespace, metadata: Name:dev
 		or by running command kubectl create namespace dev 
-	- To switch namespace to dev, kubectl config set-context $(kubectl config current-context) --namespace=dev
+	- To switch namespace to dev
+	kubectl config set-context --current --namespace=dev
 	- To view pods in all namespaces, kubectl get pods --all-namespaces
 	- To limit resources in a namespace, create a resource quota using yaml definition file
 		apiVersion: v1, kind: ResourceQuota, spec: hard: pods: "10" requests.cpu: "4" requests.memory:5Gi limits.cpu:"10"
 		limits.memory: 10Gi
+
+
+
+---
+
+### 1. **What is the purpose of namespaces in Kubernetes?**
+   **Answer**: Namespaces in Kubernetes provide a way to organize and isolate resources within a cluster. They allow for separation of environments (e.g., dev, staging, prod) and help manage access, resource quotas, and policies for different groups or applications within the same cluster.
+
+---
+
+### 2. **Can you explain the default namespaces created by Kubernetes?**
+   **Answer**: Kubernetes automatically creates three namespaces:  
+   - **default**: For user-defined resources.  
+   - **kube-system**: For internal Kubernetes components (e.g., networking, DNS).  
+   - **kube-public**: For resources that need to be available to all users within the cluster.
+
+---
+
+
+
+### 5. **What happens when two services with the same name are created in different namespaces?**
+   **Answer**: If two services have the same name but are in different namespaces, they are still considered separate resources. You can access them using the format `<service-name>.<namespace>.svc.cluster.local`, which uniquely identifies the service within the namespace.
+
+---
+
+### 6. **How do you limit resource usage within a namespace?**
+   **Answer**: You can limit resource usage in a namespace by creating a **ResourceQuota**. The quota specifies limits on the number of resources (e.g., pods, CPU, memory) that can be consumed within the namespace. This is defined in a YAML file and applied via `kubectl create -f resource-quota.yaml`.
+
+---
+
+
+
+### 8. **How do you access a service in another namespace?**
+   **Answer**: To access a service in another namespace, append the namespace to the service name using the format `servicename.namespace.svc.cluster.local`. For example, `dbservice.dev.svc.cluster.local` allows a pod in the default namespace to reach a service named `dbservice` in the `dev` namespace.
+
+---
+
+### 9. **What is the significance of the `cluster.local` suffix in Kubernetes DNS?**
+   **Answer**: The `cluster.local` suffix is the default domain name for the Kubernetes cluster. It is used in service DNS names to fully qualify them within the cluster. For example, `dbservice.dev.svc.cluster.local` uniquely identifies a service named `dbservice` in the `dev` namespace.
+
+---
+
+### 10. **Can you permanently set a namespace for a specific user or environment?**
+   **Answer**: Yes, you can permanently set a namespace for a specific environment by modifying the context with the `kubectl config set-context` command. This ensures that all subsequent `kubectl` commands will operate in the specified namespace without needing to specify it each time.
+

@@ -1,25 +1,28 @@
-    apiVersion: apps/v1
-    kind: Deployment
+
+cat << EOF | kubectl create -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template:
     metadata:
-      name: myapp-deployment
+      name: myapp-pod
       labels:
         app: myapp
         type: front-end
     spec:
-     template:
-        metadata:
-          name: myapp-pod
-          labels:
-            app: myapp
-            type: front-end
-        spec:
-         containers:
-         - name: nginx-container
-           image: nginx
-     replicas: 3
-     selector:
-       matchLabels:
-        type: front-end
+      containers:
+      - name: nginx-container
+        image: nginx
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end
+EOF
 
 
 Deployment
@@ -32,7 +35,44 @@ Deployment
 	- kubectl get deployment
 	- kubectl describe deployment dep-name
 	- kubectl describe deployments
-	- kubectl create deployment --image=httpd:1.4-alpine httpd-frontend --replicas=3 (replicas only in k8s versin 1.19+only)
+	- kubectl create deployment --image=httpd httpd-frontend --replicas=3 (replicas only in k8s versin 1.19+only)
 		--dry-run=client -o yaml > new-dep.yaml
 	- kubectl create -f new-dep.yaml
 	- To edit the deployment: kubectl edit deployment deployment-name, update the deployment and save the file will edit the deployment
+   kubectl scale deployment nginx --replicas=5
+   kubectl set image deployment nginx nginx=nginx:1.18
+   kubectl expose deployment nginx --port 80
+   kubectl expose deployment nginx --port 80 --type=NodePort --name=nginx-nodeport-service
+
+
+Based on the provided transcript, here are some important questions you may anticipate from experienced DevOps engineers along with concise answers:
+
+### 1. **What is the main advantage of using Kubernetes deployments over ReplicaSets?**
+   **Answer**: The main advantage of using Kubernetes deployments is that it provides higher-level management features, such as seamless rolling updates, rollbacks, and the ability to pause and resume updates. While ReplicaSets ensure the desired number of pod replicas, deployments manage the lifecycle and upgrades of those pods.
+
+### 2. **How do rolling updates work in Kubernetes deployments?**
+   **Answer**: Rolling updates in Kubernetes allow for the gradual upgrade of pods in a deployment without downtime. New pods with the updated version are created while the old ones are terminated gradually, ensuring that there is no interruption to the service. You can control the speed of the rollout by adjusting parameters like `maxSurge` and `maxUnavailable`.
+
+### 3. **How can you roll back a deployment in Kubernetes if an upgrade fails?**
+   **Answer**: If an upgrade results in an unexpected error, Kubernetes allows you to rollback to the previous version of the deployment using the command `kubectl rollout undo deployment <deployment-name>`. This restores the deployment to the last successful state.
+
+### 4. **Can we apply multiple changes to a Kubernetes deployment at once, and how?**
+   **Answer**: Yes, you can apply multiple changes such as scaling, upgrading the underlying web server, or modifying resource allocations by pausing the deployment using the command `kubectl rollout pause deployment <deployment-name>`. After making the changes, you can resume the deployment using `kubectl rollout resume deployment <deployment-name>`, ensuring all changes are rolled out together.
+
+### 5. **What is the purpose of the `kubectl get all` command?**
+   **Answer**: The `kubectl get all` command is used to list all the resources associated with a deployment in a Kubernetes cluster, including the deployment itself, ReplicaSets, and Pods. This helps in quickly visualizing the state of the deployment and the resources it manages.
+
+### 6. **What is the difference between Pods, ReplicaSets, and Deployments in Kubernetes?**
+   **Answer**: Pods are the smallest deployable units that contain containers. ReplicaSets ensure that a specified number of identical pods are running at any given time. Deployments manage the deployment of ReplicaSets, enabling features like rolling updates, rollbacks, and version management for seamless application lifecycle management.
+
+### 7. **How does Kubernetes manage the scaling of a deployment?**
+   **Answer**: Kubernetes allows scaling of a deployment by adjusting the `replicas` field in the deployment spec. Scaling can be done manually with the command `kubectl scale deployment <deployment-name> --replicas=<number>`, or automatically through Horizontal Pod Autoscalers (HPA) based on CPU usage or other metrics.
+
+### 8. **What is the significance of the `selector` field in the deployment spec?**
+   **Answer**: The `selector` field in the deployment spec defines the label selectors used to identify the pods managed by the deployment. It ensures that the deployment manages the correct set of pods, typically those matching the labels defined in the `template` section of the spec.
+
+### 9. **How can you check the status of a deployment and its components?**
+   **Answer**: You can check the status of a deployment using the `kubectl get deployment <deployment-name>` command. For more details on the ReplicaSets and pods associated with the deployment, you can use `kubectl get rs` for ReplicaSets and `kubectl get pods` for pods.
+
+### 10. **What happens if you create a deployment without specifying replicas?**
+   **Answer**: If you create a deployment without specifying the number of replicas, Kubernetes will assume the default value of one replica, meaning only a single instance of the pod will be running.

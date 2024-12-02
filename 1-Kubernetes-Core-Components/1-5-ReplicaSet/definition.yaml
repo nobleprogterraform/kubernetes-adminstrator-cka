@@ -1,25 +1,27 @@
-    apiVersion: apps/v1
-    kind: ReplicaSet
+cat <<EOF | kubectl create -f - 
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: myapp-replicaset
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template:
     metadata:
-      name: myapp-replicaset
+      name: myapp-pod
       labels:
         app: myapp
         type: front-end
     spec:
-     template:
-        metadata:
-          name: myapp-pod
-          labels:
-            app: myapp
-            type: front-end
-        spec:
-         containers:
-         - name: nginx-container
-           image: nginx
-     replicas: 3
-     selector:
-       matchLabels:
-        type: front-end
+      containers:
+      - name: nginx-container
+        image: nginx
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end
+EOF
 
 
 Replica sets
@@ -40,7 +42,7 @@ Replica sets
 	- final secion is replicas: 3 in yaml to define minimum number of instances 
 	- to create replication controller kubectl create -f RC-definition.yaml 
 	- to view the list kubectle get replicationcontroller
-	- How to update replicas from 3 to 6, mulitple ways, one way is to update yaml file and run kubectl replate -f rc-def.yaml
+	- How to update replicas from 3 to 6, mulitple ways, one way is to update yaml file and run kubectl replace -f rc-def.yaml
 	- second way, kubectl scale --replicas=6 -f rc-def.yaml (not udpate file automatically to 6)
 	- third way, kubectl scale --replicas=6 replicaset myapp-replicaset
 	- kubectl get replicaset, kubectl get replicaset -o wide, kubectl describe replicaset rc-name, kubectl describe replicasets
